@@ -3,12 +3,23 @@ var express = require('express');
 var app = express();
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
-var port = process.env.PORT || 8080;
+var http = require('http');
+var fileSystem = require('fs');
 
-app.get('/', function (req, res) {
-  res.send('<html><head><title>Hello!</title></head><body><h1>Hello World!</h1></body></html>');
+var server = http.createServer(function(req, resp){
+	fileSystem.readFile('./index.html', function(error, fileContent){
+		if(error){
+			resp.writeHead(500, {'Content-Type': 'text/plain'});
+			resp.end('Error');
+		}
+		else{
+			resp.writeHead(200, {'Content-Type': 'text/html'});
+			resp.write(fileContent);
+			resp.end();
+		}
+	});
 });
 
-app.listen(port, function () {
-  console.log('Example app listening on port ' + port + '!');
-});
+server.listen(8080);
+
+console.log('Listening at: localhost:8080');
